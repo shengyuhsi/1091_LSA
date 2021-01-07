@@ -2,7 +2,9 @@
 
 ## 簡介
 
-有時候人在宿舍或家中，計畫前往其他地區旅遊，卻不瞭解當地環境實際狀況。為了避免到了才發現衣服穿得不夠、準備過多行李，因此我們提供使用者遠距資訊作為出遊參考。
+有時候人在外面，房間的電腦運作中，機器/電腦老舊，常有散熱不足的問題，容易發生危險，但我們不想浪費電隨時將散熱器開啟，因此想到了過熱啟動散熱器的設計。此靈感來自我們一位機器經常過熱的室友。
+
+而有時候當我們不在位子上十，室友心癢癢地想偷看自己電腦，因此加入了攝像頭監控現場的功能。
 
 
 
@@ -55,7 +57,18 @@
 - 向 Bot Father 申請建立新的 Bot
 
     ![](https://i.imgur.com/duONFMB.png)
-- 編輯
+- 編輯選項
+
+    ![](https://i.imgur.com/OCqJBmS.jpg)
+
+- 編輯名稱
+
+    ![](https://i.imgur.com/cJAnG2N.jpg)
+
+
+- 編輯指令簡介
+    
+    ![](https://i.imgur.com/PDQpCOr.jpg)
 
 - 在樹梅派安裝 Telepot
 ``` linux=
@@ -66,12 +79,25 @@ sudo pip install telepot
 ## 指令
 
 **/photo** - 拍攝照片
+
+
+
 **/tem** - 感測溫度
+
+![](https://i.imgur.com/IT9DSdZ.png)
+
 **/hum** - 感測濕度
+
+![](https://i.imgur.com/CUGVMqc.png)
+
 **/record5** - 錄影5秒 
+
 **/record10** - 錄影10秒
+
 **/record30** - 錄影30秒
-**/video** -- 查看影片
+
+**/video** - 查看影片
+
 **/off**- 關閉攝像頭
 
 ## 參考資料

@@ -1,7 +1,7 @@
 # 室友別再亂用我電腦
 
 ## Telegram Bot link:
-https://t.me/NCNU_LSA_BOT
+t.me/NCNU_LSA_BOT
 
 ## 簡介
 
@@ -46,7 +46,7 @@ https://t.me/NCNU_LSA_BOT
 ### 製作過程
 
 - 開始攝影後無法中斷
-- 斷電系統無法完全控制
+- 斷電系統無法完全控制(硬體問題:小電扇關電後重啟無反應)
 
 ## 解決方法
 
@@ -67,8 +67,12 @@ https://t.me/NCNU_LSA_BOT
 
 - 編輯名稱
 
-    ![](https://i.imgur.com/cJAnG2N.jpg)
+    ![](https://i.imgur.com/XDeSrrG.jpg)
 
+    
+- 編輯圖片
+
+    ![](https://i.imgur.com/GZG0sjV.jpg)
 
 - 編輯指令簡介
     
@@ -82,9 +86,16 @@ sudo pip install telepot
 
 ## 指令
 
+**/start** - 開始使用
+
+![](https://i.imgur.com/P4eCFFr.jpg)
+
+![](https://i.imgur.com/1tLa3Ea.jpg)
+
+
 **/photo** - 拍攝照片
 
-
+![](https://i.imgur.com/SqXgXjw.jpg)
 
 **/tem** - 感測溫度
 
@@ -100,9 +111,18 @@ sudo pip install telepot
 
 **/record30** - 錄影30秒
 
+![](https://i.imgur.com/ol9mLcp.jpg)
+
+
+
 **/video** - 查看影片
 
+![](https://i.imgur.com/m1HjKYx.jpg)
+
+
 **/off**- 關閉攝像頭
+
+![](https://i.imgur.com/iovNke0.jpg)
 
 ## 參考資料
 

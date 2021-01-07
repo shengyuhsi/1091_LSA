@@ -1,7 +1,7 @@
 # 室友別再亂用我電腦
 
 ## Telegram Bot link:
-t.me/NCNU_LSA_BOT
+https://t.me/NCNU_LSA_BOT
 
 ## 簡介
 

@@ -1,7 +1,7 @@
 # 室友別再亂用我電腦
 
 ## Telegram Bot link:
-http://t.me/NCNU_LSA_BOT
+t.me/NCNU_LSA_BOT
 
 ## 簡介
 
@@ -34,6 +34,12 @@ http://t.me/NCNU_LSA_BOT
 - 溫度過高時，自動啟動散熱器散熱
 
 - Telegram Bot 供使用者查詢
+
+### 報告後新增
+
+- 感測移動物體，拍照回傳
+
+- 監測溫度時，一併回傳風扇狀態
 
 ## 遇到的困難
 
@@ -78,12 +84,163 @@ http://t.me/NCNU_LSA_BOT
     
     ![](https://i.imgur.com/PDQpCOr.jpg)
 
+- DHT22 
+![](https://i.imgur.com/M25k9EV.png)
+![](https://i.imgur.com/vfEPsUy.jpg)
+
+接法 
+VCC 接一號位
+Data 接七號位
+Ground 接六號位
+- 安裝Adafruit_DHT
+```linux=
+# 確認更新
+sudo apt-get update
+sudo apt-get install python3-pip
+sudo apt-get install python3-dev python3-pip
+sudo python3 -m pip install --upgrade pip setuptools wheel
+# 現在開始安裝
+sudo pip3 install Adafruit_DHT
+
+```
 - 在樹梅派安裝 Telepot
 ``` linux=
-sudo apt-get install python-pip
 sudo pip install telepot
 ```
 
+- 安裝opencv-python
+```linux=
+pip3 install opencv-python
+```
+- 安裝 gcc,make,USB libery
+```linux=
+sudo apt-get install gcc
+sudo apt-get install make
+sudo apt-get install libusb-1.0
+```
+- 下載並編碼git上的USB控制程式
+```linux=
+git clone git://github.com/mvp/uhubctl
+cd home/pi/剛剛的那個git檔案
+make
+```
+- telegram.py
+```python=
+import telepot
+import Adafruit_DHT
+import time
+from telepot.loop import MessageLoop
+import cv2
+import os
+
+DHT_SENSOR = Adafruit_DHT.DHT22
+# 我們接的位置
+DHT_PIN = 4
+
+# 拍攝照片
+def photo():
+    cap = cv2.VideoCapture(0)
+    ret,frame = cap.read()
+    cv2.imwrite('test.jpg',frame)
+    cap.release()
+# 拍攝影片
+def record(times):
+    cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH,320)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT,240)
+    sz = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+    fourcc =cv2.VideoWriter_fourcc(*'mp4v')
+    fps = 40
+    count=0
+    out = cv2.VideoWriter('output.mp4',fourcc,fps,sz)
+    while cap.isOpened():
+        ret,frame = cap.read()
+        if ret == True:
+            frame = cv2.flip(frame,1)
+            out.write(frame)
+            count+=1
+        if count == times*fps:
+            break
+    cap.release()
+    out.release()
+    
+# 測量溫濕度
+def tem():
+    global humidity
+    global temperature
+    humidity,temperature =  Adafruit_DHT.read_retry(DHT_SENSOR,DHT_PIN)
+# telegram bot 相關指令設定
+def command(msg):
+    global telegramText
+    global chat_id
+    global temperature
+    global humidity
+    chat_id = msg['chat']['id']
+    telegramText = msg['text']
+    print(str(chat_id))
+    
+    if telegramText == '/record5':
+        bot.sendMessage(chat_id,'Webcam turn on')
+         os.system('sudo ./uhubctl -l 1-1 -p 5 -a on')
+        bot.sendMessage(chat_id,'start time: {0}'.format(str(time.ctime())))
+        record(int(telegramText[-1]))
+        bot.sendMessage(chat_id,'end time: {0}'.format(str(time.ctime())))
+        bot.sendMessage(chat_id,'Record is over.')
+        bot.sendVideo(chat_id,video=open('output.mp4','rb'))
+    if telegramText == '/record30':
+        bot.sendMessage(chat_id,'Webcam turn on')
+        os.system('sudo ./uhubctl -l 1-1 -p 5 -a on')
+        bot.sendMessage(chat_id,'start time: {0}'.format(str(time.ctime())))
+        record(int(int(telegramText[-2])*10))
+        bot.sendMessage(chat_id,'end time: {0}'.format(str(time.ctime())))
+        bot.sendMessage(chat_id,'Record over.')
+        bot.sendVideo(chat_id,video=open('output.mp4','rb'))
+    if telegramText == '/record10':
+        bot.sendMessage(chat_id,'Webcam turn on')
+        os.system('sudo ./uhubctl -l 1-1 -p 5 -a on')
+        bot.sendMessage(chat_id,'start time: {0}'.format(str(time.ctime())))
+        record(int(telegramText[-2])*10)
+        bot.sendMessage(chat_id,'end time: {0}'.format(str(time.ctime())))
+        bot.sendMessage(chat_id,'Record over.')
+        bot.sendVideo(chat_id,video=open('output.mp4','rb'))
+    if telegramText =='/photo':
+        photo()
+        bot.sendPhoto(chat_id,photo=open('test.jpg','rb'))
+    if telegramText == '/off':
+        bot.sendMessage(chat_id,'Webcam  turn off.')
+        os.system('sudo ./uhubctl -l 1-1 -p 5 -a off')
+    if telegramText == '/start':
+        bot.sendMessage(chat_id,'歡迎來到請不要亂動bot,請輸入"/"選擇指令')
+    if telegramText == '/video':
+        bot.sendVideo(chat_id,video=open('output.mp4','rb'))
+    if telegramText == '/tem':
+        tem()
+        bot.sendMessage(chat_id,'temperature={0:0.1f}*c'.format(temperature))
+        bot.sendMessage(chat_id,'{0}'.format(str(time.ctime())))
+    if telegramText == '/hum':
+        tem()
+        bot.sendMessage(chat_id,'humidity={0:0.1f}%'.format(humidity))
+        bot.sendMessage(chat_id,'{0}'.format(str(time.ctime())))
+bot = telepot.Bot('You token')
+bot.message_loop(command)
+time.sleep(8000)
+```
+- fan.py
+自動控制風扇(用溫度來做判斷)
+```python=
+import os
+import Adafruit_DHT
+import time
+DHT_SENSOR = Adafruit_DHT.DHT22
+DHT_PIN = 4
+while True:
+    humidity,temperature =  Adafruit_DHT.read_retry(DHT_SENSOR,DHT_PIN)
+    if(temperature >= 40):
+        os.system('sudo ./uhubctl -l 1-1 -p 2 -a on')
+    if(temperature <= 35):
+        os.system('sudo ./uhubctl -l 1-1 -p 2 -a off')
+time.sleep(5000)
+```
 ## 指令
 
 **/start** - 開始使用
@@ -145,3 +302,10 @@ https://www.instructables.com/How-to-Make-Raspberry-Pi-Webcam-Server-and-Stream-
 
 - Webcam 即時串流
 https://www.instructables.com/How-to-Make-Raspberry-Pi-Webcam-Server-and-Stream-/
+
+- python thread
+https://www.google.com/amp/s/blog.gtwang.org/programming/python-threading-multithreaded-programming-tutorial/amp/
+
+- face
+https://www.pcmarket.com.hk/ai%E5%B9%B3%E6%B0%91%E5%8C%96-1%E5%88%86%E9%90%98%E8%A3%BD%E4%BA%BA%E8%87%89%E8%BE%A8%E8%AD%98-%E4%B8%89-%E9%81%8B%E7%94%A8%E7%AF%87/
+<hr/>
